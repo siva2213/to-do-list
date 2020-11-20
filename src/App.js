@@ -10,20 +10,36 @@ class App extends Component {
       newList: [],
       doneList: [],
       newEntry: "",
+      isAddInput: false,
     };
   }
 
-  onAddItem = () => {
-    let newEntry = this.state.newEntry;
-    if (newEntry) {
-      let modifiedState = [...this.state.newList];
-      modifiedState.push(newEntry);
-      this.setState({ newList: modifiedState, newEntry: "" });
+  onAddToggleHandler = () => {
+    this.setState({
+      isAddInput: true,
+    });
+  };
+
+  onAddItem = (e) => {
+    if (e.key === "Enter" || e.type === "blur") {
+      let newEntry = this.state.newEntry;
+      if (newEntry) {
+        let modifiedState = [...this.state.newList];
+        let todoObj = {
+          text: newEntry,
+          id: new Date().getTime(),
+        };
+        modifiedState.push(todoObj);
+        this.setState({
+          newList: modifiedState,
+          newEntry: "",
+          isAddInput: false,
+        });
+      }
     }
   };
 
   onDone = (selectedItem, onAction) => {
-    debugger;
     if (onAction === "todo") {
       let modifiedState = [...this.state.doneList];
       modifiedState.push(selectedItem);
@@ -44,14 +60,14 @@ class App extends Component {
       this.setState((prev) => {
         let modifiedState = [...this.state.newList];
         return {
-          newList: modifiedState.filter((item) => item !== selectedItem),
+          newList: modifiedState.filter((item) => item.id !== selectedItem.id),
         };
       });
     } else {
       this.setState((prev) => {
         let modifiedState = [...this.state.doneList];
         return {
-          doneList: modifiedState.filter((item) => item !== selectedItem),
+          doneList: modifiedState.filter((item) => item.id !== selectedItem.id),
         };
       });
     }
@@ -62,16 +78,21 @@ class App extends Component {
       <div className="app-container">
         <div className="todo-list-layout">
           <div className="todo-list">
-            <input
-              value={this.state.newEntry}
-              type="text"
-              onChange={(e) =>
-                this.setState({
-                  newEntry: e.target.value,
-                })
-              }
-            />
-            <button onClick={this.onAddItem}>Add</button>
+            {this.state.isAddInput ? (
+              <input
+                value={this.state.newEntry}
+                type="text"
+                onBlur={(e) => this.onAddItem(e)}
+                onKeyUp={(e) => this.onAddItem(e)}
+                onChange={(e) =>
+                  this.setState({
+                    newEntry: e.target.value,
+                  })
+                }
+              />
+            ) : (
+              <button onClick={this.onAddToggleHandler}>Add Task</button>
+            )}
           </div>
           <div className="todo-list">
             <ToDoList

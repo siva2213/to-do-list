@@ -1,18 +1,17 @@
 import React from "react";
 
 function ItemsList(props) {
-  debugger;
   return props.itemList && props.itemList.length ? (
     props.itemList.map((item) => {
       return (
-        <div className="item-container" key={item}>
+        <div className="item-container" key={item.id}>
           <div>
             <input
               type="checkbox"
               onChange={() => props.onDone(item, props.actionOn)}
             />
           </div>
-          <div>{item}</div>
+          <div>{item.text}</div>
           <div>
             <button onClick={() => props.onDelete(item, props.actionOn)}>
               delete
